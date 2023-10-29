@@ -9,11 +9,19 @@ defmodule TreeSitter.NIF do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def language_queries(_lang) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def parser_new(_lang) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
   def parser_parse(_parser, _text) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def query_matches(_tree, _language, _query, _source) do
     :erlang.nif_error(:nif_not_loaded)
   end
 end

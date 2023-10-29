@@ -1,3 +1,8 @@
 rustler::atoms! {
-    unsupported_language
+    unsupported_language,
+    highlights,
+    tags,
+    locals,
+    injection,
+    jsx,
 }

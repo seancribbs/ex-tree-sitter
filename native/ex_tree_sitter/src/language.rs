@@ -41,6 +41,20 @@ impl Language {
             Self::Typescript => get_typescript(),
         }
     }
+
+    pub fn queries(&self) -> Vec<(Atom, &'static str)> {
+        match self {
+            Self::Css => css_queries(),
+            Self::Elixir => elixir_queries(),
+            Self::EmbeddedTemplate => embedded_template_queries(),
+            Self::Erlang => erlang_queries(),
+            Self::Gleam => gleam_queries(),
+            Self::Html => html_queries(),
+            Self::Javascript => javascript_queries(),
+            Self::Sql => sql_queries(),
+            Self::Typescript => typescript_queries(),
+        }
+    }
 }
 
 macro_rules! impl_get_lang {
@@ -78,3 +92,128 @@ impl_get_lang!(
     "typescript",
     tree_sitter_typescript::language()
 );
+
+#[cfg(feature = "css")]
+fn css_queries() -> Vec<(Atom, &'static str)> {
+    vec![(
+        crate::atoms::highlights(),
+        tree_sitter_css::HIGHLIGHTS_QUERY,
+    )]
+}
+
+#[cfg(not(feature = "css"))]
+fn css_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+#[cfg(feature = "elixir")]
+fn elixir_queries() -> Vec<(Atom, &'static str)> {
+    vec![
+        (
+            crate::atoms::highlights(),
+            tree_sitter_elixir::HIGHLIGHTS_QUERY,
+        ),
+        (crate::atoms::tags(), tree_sitter_elixir::TAGS_QUERY),
+    ]
+}
+
+#[cfg(not(feature = "elixir"))]
+fn elixir_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+#[cfg(feature = "embedded-template")]
+fn embedded_template_queries() -> Vec<(Atom, &'static str)> {
+    vec![(
+        crate::atoms::highlights(),
+        tree_sitter_embedded_template::HIGHLIGHT_QUERY,
+    )]
+}
+
+#[cfg(not(feature = "embedded-template"))]
+fn embedded_template_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+fn erlang_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+#[cfg(feature = "gleam")]
+fn gleam_queries() -> Vec<(Atom, &'static str)> {
+    vec![
+        (
+            crate::atoms::highlights(),
+            tree_sitter_gleam::HIGHLIGHTS_QUERY,
+        ),
+        (crate::atoms::locals(), tree_sitter_gleam::LOCALS_QUERY),
+        (crate::atoms::tags(), tree_sitter_gleam::TAGS_QUERY),
+    ]
+}
+
+#[cfg(not(feature = "gleam"))]
+fn gleam_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+#[cfg(feature = "html")]
+fn html_queries() -> Vec<(Atom, &'static str)> {
+    vec![
+        (
+            crate::atoms::highlights(),
+            tree_sitter_html::HIGHLIGHT_QUERY,
+        ),
+        (crate::atoms::injection(), tree_sitter_html::INJECTION_QUERY),
+    ]
+}
+
+#[cfg(not(feature = "html"))]
+fn html_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+#[cfg(feature = "javascript")]
+fn javascript_queries() -> Vec<(Atom, &'static str)> {
+    vec![
+        (
+            crate::atoms::highlights(),
+            tree_sitter_javascript::HIGHLIGHT_QUERY,
+        ),
+        (
+            crate::atoms::injection(),
+            tree_sitter_javascript::INJECTION_QUERY,
+        ),
+        (
+            crate::atoms::jsx(),
+            tree_sitter_javascript::JSX_HIGHLIGHT_QUERY,
+        ),
+        (crate::atoms::locals(), tree_sitter_javascript::LOCALS_QUERY),
+        (crate::atoms::tags(), tree_sitter_javascript::TAGGING_QUERY),
+    ]
+}
+
+#[cfg(not(feature = "javascript"))]
+fn javascript_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+fn sql_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}
+
+#[cfg(feature = "typescript")]
+fn typescript_queries() -> Vec<(Atom, &'static str)> {
+    vec![
+        (
+            crate::atoms::highlights(),
+            tree_sitter_typescript::HIGHLIGHT_QUERY,
+        ),
+        (crate::atoms::locals(), tree_sitter_typescript::LOCALS_QUERY),
+        (crate::atoms::tags(), tree_sitter_typescript::TAGGING_QUERY),
+    ]
+}
+
+#[cfg(not(feature = "typescript"))]
+fn typescript_queries() -> Vec<(Atom, &'static str)> {
+    vec![]
+}

@@ -1,4 +1,5 @@
 use rustler::*;
+use std::ops::Deref;
 use std::sync::Mutex;
 
 pub struct Parser(Mutex<tree_sitter::Parser>);
@@ -20,6 +21,14 @@ impl Parser {
 }
 
 pub struct Tree(Mutex<tree_sitter::Tree>);
+
+impl Deref for Tree {
+    type Target = Mutex<tree_sitter::Tree>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl Tree {
     fn new(tree: tree_sitter::Tree) -> Self {

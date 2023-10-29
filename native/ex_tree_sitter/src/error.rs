@@ -13,11 +13,19 @@ impl IntoNifError for Atom {
     }
 }
 
-impl IntoNifError for tree_sitter::LanguageError {
-    fn into_nif_error(self) -> rustler::error::Error {
-        rustler::error::Error::Term(Box::new(format!("{self}")))
-    }
+macro_rules! impl_into_nif_error {
+    ($t:ty) => {
+        impl IntoNifError for $t {
+            fn into_nif_error(self) -> rustler::error::Error {
+                rustler::error::Error::Term(Box::new(format!("{self}")))
+            }
+        }
+    };
 }
+
+impl_into_nif_error!(std::string::FromUtf8Error);
+impl_into_nif_error!(tree_sitter::QueryError);
+impl_into_nif_error!(tree_sitter::LanguageError);
 
 impl<T> IntoNifError for std::sync::PoisonError<T> {
     fn into_nif_error(self) -> rustler::error::Error {
