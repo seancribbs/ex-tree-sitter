@@ -72,7 +72,8 @@ pub fn query_matches(
 //
 
 fn load(env: Env, _term: Term) -> bool {
-    // Let tree-sitter use BEAM's allocator
+    // TODO: Let tree-sitter use BEAM's allocator.
+    // I think this might have been a source of segfaults on query execution??
     // unsafe {
     //     tree_sitter::set_allocator(
     //         Some(rustler_sys::enif_alloc),
