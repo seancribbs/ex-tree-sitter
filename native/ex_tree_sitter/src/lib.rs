@@ -49,6 +49,16 @@ pub fn parser_parse(
 }
 
 #[nif(schedule = "DirtyCpu")]
+pub fn tree_root_node(tree: ResourceArc<parser::Tree>) -> query::Node {
+    tree.root_node()
+}
+
+#[nif(schedule = "DirtyCpu")]
+pub fn tree_pre_walk(tree: ResourceArc<parser::Tree>) -> Vec<query::Node> {
+    tree.pre_walk()
+}
+
+#[nif(schedule = "DirtyCpu")]
 pub fn query_matches(
     tree: ResourceArc<parser::Tree>,
     lang: language::Language,
@@ -92,6 +102,8 @@ rustler::init!(
         language_queries,
         parser_new,
         parser_parse,
+        tree_root_node,
+        tree_pre_walk,
         query_matches
     ],
     load = load

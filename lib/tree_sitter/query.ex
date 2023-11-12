@@ -8,12 +8,18 @@ end
 
 defmodule TreeSitter.Node do
   defstruct [
+    :id,
     :text,
     :range,
     :kind,
     :kind_id,
     :is_named,
-    :is_extra
+    :is_extra,
+    :has_changes,
+    :has_error,
+    :is_error,
+    :is_missing,
+    :child_count
   ]
 end
 

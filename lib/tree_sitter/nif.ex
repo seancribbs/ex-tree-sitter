@@ -21,6 +21,14 @@ defmodule TreeSitter.NIF do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def tree_root_node(_tree) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def tree_pre_walk(_tree) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def query_matches(_tree, _language, _query, _source) do
     :erlang.nif_error(:nif_not_loaded)
   end

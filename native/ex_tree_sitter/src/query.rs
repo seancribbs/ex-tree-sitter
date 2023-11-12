@@ -59,7 +59,7 @@ impl QueryCapture {
     ) -> Self {
         let capture_names = query.capture_names();
         let capture_name = capture_names[capture.index as usize].clone();
-        let node = Node::from_tsnode(&capture.node, source);
+        let node = Node::from_tsnode(&capture.node, Some(source));
         Self {
             node,
             capture_name,
@@ -71,32 +71,39 @@ impl QueryCapture {
 #[derive(NifStruct)]
 #[module = "TreeSitter.Node"]
 pub struct Node {
-    pub text: String,
+    pub id: usize,
+    pub text: Option<String>,
     pub range: self::Range,
     pub kind: String,
     pub kind_id: u16,
     pub is_named: bool,
     pub is_extra: bool,
+    pub has_changes: bool,
+    pub has_error: bool,
+    pub is_error: bool,
+    pub is_missing: bool,
+    pub child_count: usize,
 }
 
 impl Node {
-    pub fn from_tsnode(node: &tree_sitter::Node<'_>, source: &[u8]) -> Self {
-        let range = node.range().into();
-        let kind = node.kind().to_string();
-        let kind_id = node.kind_id();
-        let is_named = node.is_named();
-        let is_extra = node.is_extra();
-        let text = node
-            .utf8_text(source)
-            .expect("syntax node had no UTF-8 representation")
-            .to_string();
+    pub fn from_tsnode(node: &tree_sitter::Node<'_>, source: Option<&[u8]>) -> Self {
+        let text = source
+            .and_then(|s| node.utf8_text(s).ok())
+            .map(|s| s.to_string());
+
         Self {
+            id: node.id(),
             text,
-            range,
-            kind,
-            kind_id,
-            is_named,
-            is_extra,
+            range: node.range().into(),
+            kind: node.kind().to_string(),
+            kind_id: node.kind_id(),
+            is_named: node.is_named(),
+            is_extra: node.is_extra(),
+            has_changes: node.has_changes(),
+            has_error: node.has_error(),
+            is_error: node.is_error(),
+            is_missing: node.is_missing(),
+            child_count: node.child_count(),
         }
     }
 }

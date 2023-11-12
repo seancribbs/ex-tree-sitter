@@ -1,3 +1,4 @@
+use crate::query::Node;
 use rustler::*;
 use std::ops::Deref;
 use std::sync::Mutex;
@@ -34,9 +35,33 @@ impl Tree {
     fn new(tree: tree_sitter::Tree) -> Self {
         Self(Mutex::new(tree))
     }
-}
 
-// pub struct Node<'a>(tree_sitter::Node<'a>);
+    pub fn root_node(&self) -> Node {
+        Node::from_tsnode(&self.lock().unwrap().root_node(), None)
+    }
+
+    pub fn pre_walk(&self) -> Vec<Node> {
+        let tree = self.lock().unwrap();
+        let mut cursor = tree.walk();
+        let mut output = vec![];
+
+        'outer: loop {
+            output.push(Node::from_tsnode(&cursor.node(), None));
+            // Going down the tree
+            if cursor.goto_first_child() {
+                continue;
+            }
+            // Going across the tree
+            while !cursor.goto_next_sibling() {
+                if !cursor.goto_parent() {
+                    break 'outer;
+                }
+            }
+        }
+
+        output
+    }
+}
 
 pub fn load(env: Env) -> bool {
     resource!(Parser, env);
