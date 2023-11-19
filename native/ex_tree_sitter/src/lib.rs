@@ -2,6 +2,7 @@ use rustler::*;
 use std::ops::Deref;
 
 mod atoms;
+mod document;
 mod error;
 mod language;
 mod parser;
@@ -49,12 +50,28 @@ pub fn parser_parse(
 }
 
 #[nif(schedule = "DirtyCpu")]
-pub fn tree_root_node(tree: ResourceArc<parser::Tree>) -> query::Node {
+pub fn parser_reparse(
+    parser: ResourceArc<parser::Parser>,
+    old_tree: ResourceArc<parser::Tree>,
+    text: Binary,
+) -> Option<ResourceArc<parser::Tree>> {
+    parser
+        .reparse(&old_tree, text.as_slice())
+        .map(ResourceArc::new)
+}
+
+#[nif(schedule = "DirtyCpu")]
+pub fn tree_edit(tree: ResourceArc<parser::Tree>, edit: document::InputEdit) {
+    tree.edit(edit);
+}
+
+#[nif(schedule = "DirtyCpu")]
+pub fn tree_root_node(tree: ResourceArc<parser::Tree>) -> document::Node {
     tree.root_node()
 }
 
 #[nif(schedule = "DirtyCpu")]
-pub fn tree_pre_walk(tree: ResourceArc<parser::Tree>) -> Vec<query::Node> {
+pub fn tree_pre_walk(tree: ResourceArc<parser::Tree>) -> Vec<document::Node> {
     tree.pre_walk()
 }
 
@@ -102,6 +119,8 @@ rustler::init!(
         language_queries,
         parser_new,
         parser_parse,
+        parser_reparse,
+        tree_edit,
         tree_root_node,
         tree_pre_walk,
         query_matches

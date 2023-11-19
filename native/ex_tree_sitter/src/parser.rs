@@ -1,4 +1,4 @@
-use crate::query::Node;
+use crate::document::*;
 use rustler::*;
 use std::ops::Deref;
 use std::sync::Mutex;
@@ -13,11 +13,14 @@ impl Parser {
     }
 
     pub fn parse(&self, text: impl AsRef<[u8]>) -> Option<Tree> {
-        self.0
-            .lock()
-            .ok()
-            .and_then(|mut p| p.parse(text, None))
-            .map(Tree::new)
+        let mut parser = self.0.lock().ok()?;
+        parser.parse(text, None).map(Tree::new)
+    }
+
+    pub fn reparse(&self, old_tree: &Tree, new_text: impl AsRef<[u8]>) -> Option<Tree> {
+        let mut parser = self.0.lock().ok()?;
+        let old_tree = old_tree.lock().ok()?;
+        parser.parse(new_text, Some(&old_tree)).map(Tree::new)
     }
 }
 
@@ -60,6 +63,11 @@ impl Tree {
         }
 
         output
+    }
+
+    pub fn edit(&self, edit: InputEdit) {
+        let mut tree = self.lock().unwrap();
+        tree.edit(&edit.into());
     }
 }
 

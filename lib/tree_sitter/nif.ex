@@ -21,6 +21,14 @@ defmodule TreeSitter.NIF do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def parser_reparse(_parser, _old_tree, _text) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def tree_edit(_tree, _input_edit) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def tree_root_node(_tree) do
     :erlang.nif_error(:nif_not_loaded)
   end
