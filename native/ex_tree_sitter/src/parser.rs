@@ -1,4 +1,5 @@
 use crate::document::*;
+use crate::error::*;
 use rustler::*;
 use std::ops::Deref;
 use std::sync::Mutex;
@@ -10,6 +11,21 @@ impl Parser {
         let mut parser = tree_sitter::Parser::new();
         parser.set_language(lang)?;
         Ok(Self(Mutex::new(parser)))
+    }
+
+    pub fn set_language(&self, lang: tree_sitter::Language) -> Result<(), rustler::error::Error> {
+        let mut parser = self.0.lock().with_nif_error()?;
+        parser.set_language(lang).with_nif_error()?;
+        Ok(())
+    }
+
+    pub fn set_included_ranges(
+        &self,
+        ranges: &[tree_sitter::Range],
+    ) -> Result<(), rustler::error::Error> {
+        let mut parser = self.0.lock().with_nif_error()?;
+        parser.set_included_ranges(ranges).with_nif_error()?;
+        Ok(())
     }
 
     pub fn parse(&self, text: impl AsRef<[u8]>, old_tree: Option<&Tree>) -> Option<Tree> {

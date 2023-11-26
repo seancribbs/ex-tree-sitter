@@ -41,6 +41,27 @@ pub fn parser_new(lang: language::Language) -> NifResult<ResourceArc<parser::Par
         .map(ResourceArc::new)
 }
 
+#[nif]
+pub fn parser_set_language(
+    parser: ResourceArc<parser::Parser>,
+    lang: language::Language,
+) -> NifResult<()> {
+    let lang_impl = lang
+        .get_language()
+        .ok_or(atoms::unsupported_language())
+        .with_nif_error()?;
+    parser.set_language(lang_impl)
+}
+
+#[nif]
+pub fn parser_set_included_ranges(
+    parser: ResourceArc<parser::Parser>,
+    ranges: Vec<document::Range>,
+) -> NifResult<()> {
+    let ranges: Vec<tree_sitter::Range> = ranges.into_iter().map(Into::into).collect();
+    parser.set_included_ranges(&ranges)
+}
+
 #[nif(schedule = "DirtyCpu")]
 pub fn parser_parse(
     parser: ResourceArc<parser::Parser>,
@@ -111,6 +132,8 @@ rustler::init!(
         language_queries,
         parser_new,
         parser_parse,
+        parser_set_language,
+        parser_set_included_ranges,
         tree_edit,
         tree_root_node,
         tree_pre_walk,
