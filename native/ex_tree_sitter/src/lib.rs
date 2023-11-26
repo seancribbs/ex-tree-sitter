@@ -45,18 +45,10 @@ pub fn parser_new(lang: language::Language) -> NifResult<ResourceArc<parser::Par
 pub fn parser_parse(
     parser: ResourceArc<parser::Parser>,
     text: Binary,
-) -> Option<ResourceArc<parser::Tree>> {
-    parser.parse(text.as_slice()).map(ResourceArc::new)
-}
-
-#[nif(schedule = "DirtyCpu")]
-pub fn parser_reparse(
-    parser: ResourceArc<parser::Parser>,
-    old_tree: ResourceArc<parser::Tree>,
-    text: Binary,
+    old_tree: Option<ResourceArc<parser::Tree>>,
 ) -> Option<ResourceArc<parser::Tree>> {
     parser
-        .reparse(&old_tree, text.as_slice())
+        .parse(text.as_slice(), old_tree.as_deref())
         .map(ResourceArc::new)
 }
 
@@ -119,7 +111,6 @@ rustler::init!(
         language_queries,
         parser_new,
         parser_parse,
-        parser_reparse,
         tree_edit,
         tree_root_node,
         tree_pre_walk,

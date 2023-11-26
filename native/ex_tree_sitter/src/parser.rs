@@ -12,15 +12,14 @@ impl Parser {
         Ok(Self(Mutex::new(parser)))
     }
 
-    pub fn parse(&self, text: impl AsRef<[u8]>) -> Option<Tree> {
+    pub fn parse(&self, text: impl AsRef<[u8]>, old_tree: Option<&Tree>) -> Option<Tree> {
         let mut parser = self.0.lock().ok()?;
-        parser.parse(text, None).map(Tree::new)
-    }
-
-    pub fn reparse(&self, old_tree: &Tree, new_text: impl AsRef<[u8]>) -> Option<Tree> {
-        let mut parser = self.0.lock().ok()?;
-        let old_tree = old_tree.lock().ok()?;
-        parser.parse(new_text, Some(&old_tree)).map(Tree::new)
+        let old_tree = if let Some(tree) = old_tree {
+            tree.lock().ok()
+        } else {
+            None
+        };
+        parser.parse(text, old_tree.as_deref()).map(Tree::new)
     }
 }
 

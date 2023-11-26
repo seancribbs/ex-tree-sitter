@@ -8,22 +8,8 @@ defmodule TreeSitter.Parser do
     end
   end
 
-  def parse(%TreeSitter.Parser{parser: parser, language: language}, source) do
-    case TreeSitter.NIF.parser_parse(parser, source) do
-      {:error, _} = err ->
-        err
-
-      tree ->
-        {:ok, %TreeSitter.Tree{tree: tree, language: language, source: source}}
-    end
-  end
-
-  def reparse(
-        %TreeSitter.Parser{parser: parser, language: language},
-        %TreeSitter.Tree{tree: tree},
-        source
-      ) do
-    case TreeSitter.NIF.parser_reparse(parser, tree, source) do
+  def parse(%TreeSitter.Parser{parser: parser, language: language}, source, old_tree \\ nil) do
+    case TreeSitter.NIF.parser_parse(parser, source, old_tree) do
       {:error, _} = err ->
         err
 
