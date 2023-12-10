@@ -8,8 +8,6 @@ mod language;
 mod parser;
 mod query;
 
-use error::*;
-
 //
 // ---- API functions ----
 //
@@ -32,13 +30,9 @@ pub fn language_queries(
 
 #[nif]
 pub fn parser_new(lang: language::Language) -> NifResult<ResourceArc<parser::Parser>> {
-    let lang_impl = lang
-        .get_language()
-        .ok_or(atoms::unsupported_language())
-        .with_nif_error()?;
-    parser::Parser::new(lang_impl)
-        .with_nif_error()
-        .map(ResourceArc::new)
+    let lang_impl = lang.get_language().ok_or(unsupported_language_error())?;
+    let parser = parser::Parser::new(lang_impl)?;
+    Ok(ResourceArc::new(parser))
 }
 
 #[nif]
@@ -46,11 +40,8 @@ pub fn parser_set_language(
     parser: ResourceArc<parser::Parser>,
     lang: language::Language,
 ) -> NifResult<()> {
-    let lang_impl = lang
-        .get_language()
-        .ok_or(atoms::unsupported_language())
-        .with_nif_error()?;
-    parser.set_language(lang_impl)
+    let lang_impl = lang.get_language().ok_or(unsupported_language_error())?;
+    Ok(parser.set_language(lang_impl)?)
 }
 
 #[nif]
@@ -59,7 +50,7 @@ pub fn parser_set_included_ranges(
     ranges: Vec<document::Range>,
 ) -> NifResult<()> {
     let ranges: Vec<tree_sitter::Range> = ranges.into_iter().map(Into::into).collect();
-    parser.set_included_ranges(&ranges)
+    Ok(parser.set_included_ranges(&ranges)?)
 }
 
 #[nif(schedule = "DirtyCpu")]
@@ -95,16 +86,13 @@ pub fn query_matches(
     query_raw: Binary,
     source: Binary,
 ) -> NifResult<Vec<query::QueryMatch>> {
-    let lang_impl = lang
-        .get_language()
-        .ok_or(atoms::unsupported_language())
-        .with_nif_error()?;
-    query::query_matches(
-        tree.lock().with_nif_error()?.deref(),
+    let lang_impl = lang.get_language().ok_or(unsupported_language_error())?;
+    Ok(query::query_matches(
+        tree.lock()?.deref(),
         lang_impl,
         query_raw.as_slice(),
         source.as_slice(),
-    )
+    )?)
 }
 
 //
@@ -123,6 +111,10 @@ fn load(env: Env, _term: Term) -> bool {
     //     );
     // }
     parser::load(env)
+}
+
+fn unsupported_language_error() -> rustler::error::Error {
+    rustler::error::Error::Term(Box::new(atoms::unsupported_language()))
 }
 
 rustler::init!(

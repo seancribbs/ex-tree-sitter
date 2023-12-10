@@ -1,30 +1,32 @@
 use crate::document::*;
-use crate::error::*;
-use rustler::*;
-use std::ops::Deref;
-use std::sync::Mutex;
+use crate::error::Error;
+use rustler::{resource, Env};
+use std::sync::{Mutex, MutexGuard};
+
+pub type ParserError<'a> = Error<MutexGuard<'a, tree_sitter::Parser>>;
+pub type TreeError<'a> = Error<MutexGuard<'a, tree_sitter::Tree>>;
 
 pub struct Parser(Mutex<tree_sitter::Parser>);
 
 impl Parser {
-    pub fn new(lang: tree_sitter::Language) -> Result<Self, tree_sitter::LanguageError> {
+    pub fn new<'a>(lang: tree_sitter::Language) -> Result<Self, ParserError<'a>> {
         let mut parser = tree_sitter::Parser::new();
         parser.set_language(lang)?;
         Ok(Self(Mutex::new(parser)))
     }
 
-    pub fn set_language(&self, lang: tree_sitter::Language) -> Result<(), rustler::error::Error> {
-        let mut parser = self.0.lock().with_nif_error()?;
-        parser.set_language(lang).with_nif_error()?;
+    pub fn set_language(&self, lang: tree_sitter::Language) -> Result<(), ParserError<'_>> {
+        let mut parser = self.lock()?;
+        parser.set_language(lang)?;
         Ok(())
     }
 
     pub fn set_included_ranges(
         &self,
         ranges: &[tree_sitter::Range],
-    ) -> Result<(), rustler::error::Error> {
-        let mut parser = self.0.lock().with_nif_error()?;
-        parser.set_included_ranges(ranges).with_nif_error()?;
+    ) -> Result<(), ParserError<'_>> {
+        let mut parser = self.lock()?;
+        parser.set_included_ranges(ranges)?;
         Ok(())
     }
 
@@ -37,17 +39,13 @@ impl Parser {
         };
         parser.parse(text, old_tree.as_deref()).map(Tree::new)
     }
+
+    pub fn lock<'a>(&'a self) -> Result<MutexGuard<'a, tree_sitter::Parser>, ParserError<'a>> {
+        Ok(self.0.lock()?)
+    }
 }
 
 pub struct Tree(Mutex<tree_sitter::Tree>);
-
-impl Deref for Tree {
-    type Target = Mutex<tree_sitter::Tree>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
 
 impl Tree {
     fn new(tree: tree_sitter::Tree) -> Self {
@@ -83,6 +81,10 @@ impl Tree {
     pub fn edit(&self, edit: InputEdit) {
         let mut tree = self.lock().unwrap();
         tree.edit(&edit.into());
+    }
+
+    pub fn lock<'a>(&'a self) -> Result<MutexGuard<'a, tree_sitter::Tree>, TreeError<'a>> {
+        Ok(self.0.lock()?)
     }
 }
 

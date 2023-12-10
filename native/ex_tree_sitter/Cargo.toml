@@ -27,6 +27,7 @@ typescript = ["tree-sitter-typescript"]
 rustler = { version = "0.30.0", features = ["nif_version_2_17"] }
 rustler_sys = "*"
 tree-sitter = "0.20.10"
+thiserror = "1.0"
 tree-sitter-css = { version = "0.19.0", optional = true }
 tree-sitter-elixir = { version = "0.1.0", optional = true }
 tree-sitter-embedded-template = { version = "0.20.0", optional = true }

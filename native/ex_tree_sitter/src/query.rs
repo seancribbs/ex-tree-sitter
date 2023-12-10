@@ -1,16 +1,18 @@
 use crate::document::*;
 use crate::error::*;
-use rustler::*;
+use rustler::NifStruct;
 use tree_sitter::{Query, QueryCursor};
+
+pub struct Dummy;
 
 pub fn query_matches(
     tree: &tree_sitter::Tree,
     language: tree_sitter::Language,
     query_raw: &[u8],
     source: &[u8],
-) -> NifResult<Vec<QueryMatch>> {
-    let query_source = String::from_utf8(query_raw.to_vec()).with_nif_error()?;
-    let query = Query::new(language, &query_source).with_nif_error()?;
+) -> Result<Vec<QueryMatch>, Error<Dummy>> {
+    let query_source = String::from_utf8(query_raw.to_vec())?;
+    let query = Query::new(language, &query_source)?;
     let mut cursor = QueryCursor::new();
     Ok(cursor
         .matches(&query, tree.root_node(), source)
