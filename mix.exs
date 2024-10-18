@@ -19,7 +19,7 @@ defmodule TreeSitter.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:rustler, "~> 0.30", runtime: false}
+      {:rustler, "~> 0.35", runtime: false}
     ]
   end
 end
