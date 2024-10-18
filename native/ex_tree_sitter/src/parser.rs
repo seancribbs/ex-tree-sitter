@@ -1,12 +1,14 @@
 use crate::document::*;
 use crate::error::Error;
-use rustler::{resource, Env};
 use std::sync::{Mutex, MutexGuard};
 
 pub type ParserError<'a> = Error<MutexGuard<'a, tree_sitter::Parser>>;
 pub type TreeError<'a> = Error<MutexGuard<'a, tree_sitter::Tree>>;
 
 pub struct Parser(Mutex<tree_sitter::Parser>);
+
+#[rustler::resource_impl]
+impl rustler::Resource for Parser {}
 
 impl Parser {
     pub fn new<'a>(lang: tree_sitter::Language) -> Result<Self, ParserError<'a>> {
@@ -47,6 +49,9 @@ impl Parser {
 
 pub struct Tree(Mutex<tree_sitter::Tree>);
 
+#[rustler::resource_impl]
+impl rustler::Resource for Tree {}
+
 impl Tree {
     fn new(tree: tree_sitter::Tree) -> Self {
         Self(Mutex::new(tree))
@@ -86,10 +91,4 @@ impl Tree {
     pub fn lock<'a>(&'a self) -> Result<MutexGuard<'a, tree_sitter::Tree>, TreeError<'a>> {
         Ok(self.0.lock()?)
     }
-}
-
-pub fn load(env: Env) -> bool {
-    resource!(Parser, env);
-    resource!(Tree, env);
-    true
 }
