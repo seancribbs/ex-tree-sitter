@@ -13,13 +13,13 @@ impl rustler::Resource for Parser {}
 impl Parser {
     pub fn new<'a>(lang: tree_sitter::Language) -> Result<Self, ParserError<'a>> {
         let mut parser = tree_sitter::Parser::new();
-        parser.set_language(lang)?;
+        parser.set_language(&lang)?;
         Ok(Self(Mutex::new(parser)))
     }
 
     pub fn set_language(&self, lang: tree_sitter::Language) -> Result<(), ParserError<'_>> {
         let mut parser = self.lock()?;
-        parser.set_language(lang)?;
+        parser.set_language(&lang)?;
         Ok(())
     }
 

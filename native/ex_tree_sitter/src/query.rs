@@ -12,7 +12,7 @@ pub fn query_matches(
     source: &[u8],
 ) -> Result<Vec<QueryMatch>, Error<Dummy>> {
     let query_source = String::from_utf8(query_raw.to_vec())?;
-    let query = Query::new(language, &query_source)?;
+    let query = Query::new(&language, &query_source)?;
     let mut cursor = QueryCursor::new();
     Ok(cursor
         .matches(&query, tree.root_node(), source)
@@ -61,7 +61,7 @@ impl QueryCapture {
         source: &[u8],
     ) -> Self {
         let capture_names = query.capture_names();
-        let capture_name = capture_names[capture.index as usize].clone();
+        let capture_name = capture_names[capture.index as usize].to_string();
         let node = Node::from_tsnode(&capture.node, Some(source));
         Self {
             node,
