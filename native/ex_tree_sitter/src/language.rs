@@ -161,9 +161,9 @@ fn html_queries() -> Vec<(Atom, &'static str)> {
     vec![
         (
             crate::atoms::highlights(),
-            tree_sitter_html::HIGHLIGHT_QUERY,
+            tree_sitter_html::HIGHLIGHTS_QUERY,
         ),
-        (crate::atoms::injection(), tree_sitter_html::INJECTION_QUERY),
+        (crate::atoms::injection(), tree_sitter_html::INJECTIONS_QUERY),
     ]
 }
 
