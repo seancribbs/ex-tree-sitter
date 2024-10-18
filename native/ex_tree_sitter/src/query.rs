@@ -12,7 +12,7 @@ pub fn query_matches(
     source: &[u8],
 ) -> Result<Vec<QueryMatch>, Error<Dummy>> {
     let query_source = String::from_utf8(query_raw.to_vec())?;
-    let query = Query::new(language, &query_source)?;
+    let query = Query::new(&language, &query_source)?;
     let mut cursor = QueryCursor::new();
     Ok(cursor
         .matches(&query, tree.root_node(), source)
