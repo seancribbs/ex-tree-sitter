@@ -99,37 +99,10 @@ pub fn query_matches(
 // ---- NIF boilerplate ----
 //
 
-fn load(env: Env, _term: Term) -> bool {
-    // TODO: Let tree-sitter use BEAM's allocator.
-    // I think this might have been a source of segfaults on query execution??
-    // unsafe {
-    //     tree_sitter::set_allocator(
-    //         Some(rustler_sys::enif_alloc),
-    //         None,
-    //         Some(rustler_sys::enif_realloc),
-    //         Some(rustler_sys::enif_free),
-    //     );
-    // }
-    parser::load(env)
-}
-
 fn unsupported_language_error() -> rustler::error::Error {
     rustler::error::Error::Term(Box::new(atoms::unsupported_language()))
 }
 
 rustler::init!(
-    "Elixir.TreeSitter.NIF",
-    [
-        language_supported,
-        language_queries,
-        parser_new,
-        parser_parse,
-        parser_set_language,
-        parser_set_included_ranges,
-        tree_edit,
-        tree_root_node,
-        tree_pre_walk,
-        query_matches
-    ],
-    load = load
+    "Elixir.TreeSitter.NIF"
 );
