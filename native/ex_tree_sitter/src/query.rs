@@ -61,7 +61,7 @@ impl QueryCapture {
         source: &[u8],
     ) -> Self {
         let capture_names = query.capture_names();
-        let capture_name = capture_names[capture.index as usize].clone();
+        let capture_name = capture_names[capture.index as usize].to_string();
         let node = Node::from_tsnode(&capture.node, Some(source));
         Self {
             node,
