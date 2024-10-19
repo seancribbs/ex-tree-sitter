@@ -19,7 +19,7 @@ erlang = ["tree-sitter-erlang"]
 gleam = ["tree-sitter-gleam"]
 html = ["tree-sitter-html"]
 json = ["tree-sitter-json"]
-sql = ["tree-sitter-sql"]
+sql = ["tree-sitter-sequel"]
 javascript = ["tree-sitter-javascript"]
 typescript = ["tree-sitter-typescript"]
 
@@ -35,7 +35,7 @@ tree-sitter-gleam = { git = "https://github.com/gleam-lang/tree-sitter-gleam.git
 tree-sitter-html = { version = "0.20.3", optional = true }
 tree-sitter-javascript = { version = "0.21.2", optional = true }
 tree-sitter-json = { version = "0.20.1", optional = true }
-tree-sitter-sql = { version = "0.0.2", optional = true }
+tree-sitter-sequel = { version = "0.3.5", optional = true }
 tree-sitter-typescript = { version = "0.21.2", optional = true }
 
 [build-dependencies]

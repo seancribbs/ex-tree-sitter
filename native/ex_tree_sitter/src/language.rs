@@ -86,7 +86,7 @@ impl_get_lang!(
     "javascript",
     tree_sitter_javascript::language()
 );
-impl_get_lang!(get_sql, "sql", tree_sitter_sql::language());
+impl_get_lang!(get_sql, "sql", tree_sitter_sequel::language());
 impl_get_lang!(
     get_typescript,
     "typescript",
