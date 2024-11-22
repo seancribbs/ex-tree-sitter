@@ -71,26 +71,26 @@ macro_rules! impl_get_lang {
     };
 }
 
-impl_get_lang!(get_css, "css", tree_sitter_css::language());
-impl_get_lang!(get_elixir, "elixir", tree_sitter_elixir::language());
+impl_get_lang!(get_css, "css", tree_sitter_css::LANGUAGE.into());
+impl_get_lang!(get_elixir, "elixir", tree_sitter_elixir::LANGUAGE.into());
 impl_get_lang!(
     get_embedded_template,
     "embedded-template",
-    tree_sitter_embedded_template::language()
+    tree_sitter_embedded_template::LANGUAGE.into()
 );
-impl_get_lang!(get_erlang, "erlang", tree_sitter_erlang::language());
-impl_get_lang!(get_gleam, "gleam", tree_sitter_gleam::language());
-impl_get_lang!(get_html, "html", tree_sitter_html::language());
+impl_get_lang!(get_erlang, "erlang", tree_sitter_erlang::LANGUAGE.into());
+impl_get_lang!(get_gleam, "gleam", tree_sitter_gleam::LANGUAGE.into());
+impl_get_lang!(get_html, "html", tree_sitter_html::LANGUAGE.into());
 impl_get_lang!(
     get_javascript,
     "javascript",
-    tree_sitter_javascript::language()
+    tree_sitter_javascript::LANGUAGE.into()
 );
-impl_get_lang!(get_sql, "sql", tree_sitter_sequel::language());
+impl_get_lang!(get_sql, "sql", tree_sitter_sequel::LANGUAGE.into());
 impl_get_lang!(
     get_typescript,
     "typescript",
-    tree_sitter_typescript::language()
+    tree_sitter_typescript::LANGUAGE.into()
 );
 
 #[cfg(feature = "css")]
@@ -126,7 +126,7 @@ fn elixir_queries() -> Vec<(Atom, &'static str)> {
 fn embedded_template_queries() -> Vec<(Atom, &'static str)> {
     vec![(
         crate::atoms::highlights(),
-        tree_sitter_embedded_template::HIGHLIGHT_QUERY,
+        tree_sitter_embedded_template::HIGHLIGHTS_QUERY,
     )]
 }
 
@@ -177,7 +177,7 @@ fn javascript_queries() -> Vec<(Atom, &'static str)> {
     vec![
         (
             crate::atoms::highlights(),
-            tree_sitter_javascript::HIGHLIGHT_QUERY,
+            tree_sitter_javascript::HIGHLIGHTS_QUERY,
         ),
         (
             crate::atoms::injection(),
@@ -185,7 +185,7 @@ fn javascript_queries() -> Vec<(Atom, &'static str)> {
         ),
         (
             crate::atoms::jsx(),
-            tree_sitter_javascript::JSX_HIGHLIGHT_QUERY,
+            tree_sitter_javascript::JSX_HIGHLIGHTS_QUERY,
         ),
         (crate::atoms::locals(), tree_sitter_javascript::LOCALS_QUERY),
         (crate::atoms::tags(), tree_sitter_javascript::TAGGING_QUERY),
@@ -206,7 +206,7 @@ fn typescript_queries() -> Vec<(Atom, &'static str)> {
     vec![
         (
             crate::atoms::highlights(),
-            tree_sitter_typescript::HIGHLIGHT_QUERY,
+            tree_sitter_typescript::HIGHLIGHTS_QUERY,
         ),
         (crate::atoms::locals(), tree_sitter_typescript::LOCALS_QUERY),
         (crate::atoms::tags(), tree_sitter_typescript::TAGGING_QUERY),

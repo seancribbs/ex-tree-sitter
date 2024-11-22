@@ -1,6 +1,7 @@
 use crate::document::*;
 use crate::error::*;
 use rustler::NifStruct;
+use streaming_iterator::StreamingIterator;
 use tree_sitter::{Query, QueryCursor};
 
 pub struct Dummy;
@@ -13,11 +14,14 @@ pub fn query_matches(
 ) -> Result<Vec<QueryMatch>, Error<Dummy>> {
     let query_source = String::from_utf8(query_raw.to_vec())?;
     let query = Query::new(&language, &query_source)?;
-    let mut cursor = QueryCursor::new();
-    Ok(cursor
-        .matches(&query, tree.root_node(), source)
-        .map(|m| QueryMatch::from_tsmatch(m, &query, source))
-        .collect())
+    let mut query_cursor = QueryCursor::new();
+    let mut match_iter = query_cursor
+        .matches(&query, tree.root_node(), source);
+    let mut results = Vec::new();
+    while let Some(mat) = match_iter.next() {
+        results.push(QueryMatch::from_tsmatch(mat, &query, source));
+    }
+    Ok(results)
 }
 
 #[derive(NifStruct)]
@@ -29,7 +33,7 @@ pub struct QueryMatch {
 
 impl QueryMatch {
     pub fn from_tsmatch(
-        tsmatch: tree_sitter::QueryMatch<'_, '_>,
+        tsmatch: &tree_sitter::QueryMatch<'_, '_>,
         query: &tree_sitter::Query,
         source: &[u8],
     ) -> Self {
